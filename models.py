@@ -36,3 +36,19 @@ class Alert(Base):
     event_count = Column(Integer)
     status = Column(String, default="open")
     description = Column(Text)
+
+class DetectionRule(Base):
+    __tablename__ = "detection_rules"
+
+    id = Column(Integer, primary_key=True, index=True)
+
+    name = Column(String, unique=True, index=True)
+    description = Column(Text)
+
+    event_type = Column(String, index=True)
+    severity = Column(String)
+
+    threshold = Column(Integer)
+    window_minutes = Column(Integer)
+
+    enabled = Column(String, default="true")

@@ -1,4 +1,5 @@
-from fastapi import FastAPI, Depends
+from models import SecurityEvent, Alert, DetectionRule
+from fastapi import FastAPI, Depends, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 
@@ -62,3 +63,36 @@ def get_alerts(db: Session = Depends(get_db)):
     )
 
     return alerts
+
+@app.get("/detections")
+def get_detection_rules(db: Session = Depends(get_db)):
+    return (
+        db.query(DetectionRule)
+        .order_by(DetectionRule.id.asc())
+        .all()
+    )
+@app.patch("/detections/{rule_id}/toggle")
+def toggle_detection_rule(
+    rule_id: int,
+    db: Session = Depends(get_db)
+):
+    rule = (
+        db.query(DetectionRule)
+        .filter(DetectionRule.id == rule_id)
+        .first()
+    )
+
+    if not rule:
+        raise HTTPException(
+            status_code=404,
+            detail="Detection rule not found"
+        )
+
+    rule.enabled = (
+        "false" if rule.enabled == "true" else "true"
+    )
+
+    db.commit()
+    db.refresh(rule)
+
+    return rule
