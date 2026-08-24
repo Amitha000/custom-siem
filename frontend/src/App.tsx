@@ -1,3 +1,5 @@
+import DetectionsPage from "./pages/DetectionsPage";
+import AlertsPage from "./pages/AlertsPage";
 import { useEffect, useState } from "react";
 import {
   Activity,
@@ -6,6 +8,14 @@ import {
   Gauge,
   Shield,
 } from "lucide-react";
+import {
+  BrowserRouter,
+  NavLink,
+  Route,
+  Routes,
+} from "react-router-dom";
+
+import EventsPage from "./pages/EventsPage";
 
 type SecurityEvent = {
   id: number;
@@ -31,6 +41,80 @@ type Alert = {
 };
 
 export default function App() {
+  return (
+    <BrowserRouter>
+      <div className="app">
+        <Sidebar />
+
+        <main className="content">
+          <Routes>
+            <Route path="/" element={<Overview />} />
+            <Route path="/events" element={<EventsPage />} />
+            <Route path="/alerts" element={<AlertsPage />} />
+            <Route path="/detections" element={<DetectionsPage />} />
+          </Routes>
+        </main>
+      </div>
+    </BrowserRouter>
+  );
+}
+
+function Sidebar() {
+  return (
+    <aside className="sidebar">
+      <div className="brand">
+        <Shield size={28} />
+        <span>Custom SIEM</span>
+      </div>
+
+      <nav>
+        <NavLink
+          to="/"
+          end
+          className={({ isActive }) =>
+            isActive ? "active" : ""
+          }
+        >
+          <Gauge size={18} />
+          Overview
+        </NavLink>
+
+        <NavLink
+          to="/events"
+          className={({ isActive }) =>
+            isActive ? "active" : ""
+          }
+        >
+          <Activity size={18} />
+          Events
+        </NavLink>
+
+        <NavLink
+          to="/alerts"
+          className={({ isActive }) =>
+            isActive ? "active" : ""
+          }
+        >
+          <Bell size={18} />
+          Alerts
+        </NavLink>
+        
+        <NavLink
+          to="/detections"
+          className={({ isActive }) =>
+            isActive ? "active" : ""
+          }
+        >
+          <AlertTriangle size={18} />
+          Detections
+        </NavLink>    
+
+      </nav>
+    </aside>
+  );
+}
+
+function Overview() {
   const [events, setEvents] = useState<SecurityEvent[]>([]);
   const [alerts, setAlerts] = useState<Alert[]>([]);
 
@@ -51,152 +135,128 @@ export default function App() {
   ).length;
 
   return (
-    <div className="app">
-      <aside className="sidebar">
-        <div className="brand">
-          <Shield size={28} />
-          <span>Custom SIEM</span>
+    <>
+      <header className="topbar">
+        <div>
+          <p className="eyebrow">Security Operations</p>
+          <h1>SIEM Overview</h1>
         </div>
 
-        <nav>
-          <a className="active">
-            <Gauge size={18} />
-            Overview
-          </a>
+        <div className="status">
+          <span className="status-dot" />
+          System Online
+        </div>
+      </header>
 
-          <a>
-            <Activity size={18} />
-            Events
-          </a>
+      <section className="cards">
+        <MetricCard
+          title="Security Events"
+          value={events.length}
+          icon={<Activity />}
+        />
 
-          <a>
-            <Bell size={18} />
-            Alerts
-          </a>
+        <MetricCard
+          title="Open Alerts"
+          value={
+            alerts.filter((alert) => alert.status === "open")
+              .length
+          }
+          icon={<Bell />}
+        />
 
-          <a>
-            <AlertTriangle size={18} />
-            Detections
-          </a>
-        </nav>
-      </aside>
+        <MetricCard
+          title="Critical Alerts"
+          value={criticalAlerts}
+          icon={<AlertTriangle />}
+        />
 
-      <main className="content">
-        <header className="topbar">
+        <MetricCard
+          title="Monitored Hosts"
+          value={new Set(events.map((event) => event.host)).size}
+          icon={<Shield />}
+        />
+      </section>
+
+      <section className="panel">
+        <div className="panel-header">
           <div>
-            <p className="eyebrow">Security Operations</p>
-            <h1>SIEM Overview</h1>
+            <p className="eyebrow">Detection Queue</p>
+            <h2>Recent Alerts</h2>
           </div>
+        </div>
 
-          <div className="status">
-            <span className="status-dot" />
-            System Online
-          </div>
-        </header>
+        <div className="alert-list">
+          {alerts.length === 0 ? (
+            <p className="empty">No alerts detected.</p>
+          ) : (
+            alerts.slice(0, 5).map((alert) => (
+              <div className="alert-row" key={alert.id}>
+                <span className={`severity ${alert.severity}`}>
+                  {alert.severity}
+                </span>
 
-        <section className="cards">
-          <MetricCard
-            title="Security Events"
-            value={events.length}
-            icon={<Activity />}
-          />
-
-          <MetricCard
-            title="Open Alerts"
-            value={alerts.filter((alert) => alert.status === "open").length}
-            icon={<Bell />}
-          />
-
-          <MetricCard
-            title="Critical Alerts"
-            value={criticalAlerts}
-            icon={<AlertTriangle />}
-          />
-
-          <MetricCard
-            title="Monitored Hosts"
-            value={new Set(events.map((event) => event.host)).size}
-            icon={<Shield />}
-          />
-        </section>
-
-        <section className="panel">
-          <div className="panel-header">
-            <div>
-              <p className="eyebrow">Detection Queue</p>
-              <h2>Recent Alerts</h2>
-            </div>
-          </div>
-
-          <div className="alert-list">
-            {alerts.length === 0 ? (
-              <p className="empty">No alerts detected.</p>
-            ) : (
-              alerts.slice(0, 5).map((alert) => (
-                <div className="alert-row" key={alert.id}>
-                  <span className={`severity ${alert.severity}`}>
-                    {alert.severity}
-                  </span>
-
-                  <div>
-                    <strong>{alert.rule_name}</strong>
-                    <p>
-                      {alert.host ?? "Unknown host"} ·{" "}
-                      {alert.username ?? "Unknown user"}
-                    </p>
-                  </div>
-
-                  <span className="event-count">
-                    {alert.event_count} events
-                  </span>
+                <div>
+                  <strong>{alert.rule_name}</strong>
+                  <p>
+                    {alert.host ?? "Unknown host"} ·{" "}
+                    {alert.username ?? "Unknown user"}
+                  </p>
                 </div>
-              ))
-            )}
-          </div>
-        </section>
 
-        <section className="panel">
-          <div className="panel-header">
-            <div>
-              <p className="eyebrow">Telemetry</p>
-              <h2>Latest Security Events</h2>
-            </div>
-          </div>
+                <span className="event-count">
+                  {alert.event_count} events
+                </span>
+              </div>
+            ))
+          )}
+        </div>
+      </section>
 
-          <div className="table-wrap">
-            <table>
-              <thead>
-                <tr>
-                  <th>Time</th>
-                  <th>Host</th>
-                  <th>User</th>
-                  <th>Event</th>
-                  <th>Process</th>
-                  <th>Severity</th>
+      <section className="panel">
+        <div className="panel-header">
+          <div>
+            <p className="eyebrow">Telemetry</p>
+            <h2>Latest Security Events</h2>
+          </div>
+        </div>
+
+        <div className="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Time</th>
+                <th>Host</th>
+                <th>User</th>
+                <th>Event</th>
+                <th>Process</th>
+                <th>Severity</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {events.slice(0, 10).map((event) => (
+                <tr key={event.id}>
+                  <td>
+                    {new Date(
+                      event.timestamp
+                    ).toLocaleTimeString()}
+                  </td>
+                  <td>{event.host}</td>
+                  <td>{event.username ?? "-"}</td>
+                  <td>{event.event_type}</td>
+                  <td>{event.process ?? "-"}</td>
+                  <td>
+                    <span className={`severity ${event.severity}`}>
+                      {event.severity}
+                    </span>
+                  </td>
                 </tr>
-              </thead>
-
-              <tbody>
-                {events.slice(0, 10).map((event) => (
-                  <tr key={event.id}>
-                    <td>{new Date(event.timestamp).toLocaleTimeString()}</td>
-                    <td>{event.host}</td>
-                    <td>{event.username ?? "-"}</td>
-                    <td>{event.event_type}</td>
-                    <td>{event.process ?? "-"}</td>
-                    <td>
-                      <span className={`severity ${event.severity}`}>
-                        {event.severity}
-                      </span>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </section>
-      </main>
-    </div>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </>
   );
 }
 
