@@ -571,3 +571,143 @@ td {
 .switch.off .switch-knob {
   transform: translateX(0);
 }
+.detection-actions {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.edit-rule-button {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  border: 1px solid #334155;
+  background: #0f172a;
+  color: #cbd5e1;
+  padding: 7px 10px;
+  border-radius: 7px;
+  cursor: pointer;
+}
+
+.edit-rule-button:hover {
+  border-color: #4fd1c5;
+  color: #5eead4;
+}
+
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: rgba(2, 6, 23, 0.78);
+  backdrop-filter: blur(4px);
+}
+
+.edit-rule-modal {
+  width: min(520px, 100%);
+  border: 1px solid #334155;
+  border-radius: 14px;
+  background: #0b1220;
+  box-shadow: 0 25px 70px rgba(0, 0, 0, 0.45);
+  padding: 24px;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.modal-close {
+  display: grid;
+  place-items: center;
+  border: none;
+  background: transparent;
+  color: #94a3b8;
+  cursor: pointer;
+}
+
+.modal-close:hover {
+  color: #f8fafc;
+}
+
+.edit-rule-name {
+  display: grid;
+  gap: 5px;
+  margin: 22px 0;
+  padding: 14px;
+  border: 1px solid #1e293b;
+  border-radius: 9px;
+  background: #0f172a;
+}
+
+.edit-rule-name span {
+  color: #64748b;
+  font-size: 12px;
+}
+
+.edit-form {
+  display: grid;
+  gap: 16px;
+}
+
+.edit-form label {
+  display: grid;
+  gap: 7px;
+  color: #94a3b8;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.edit-form input,
+.edit-form select {
+  width: 100%;
+  border: 1px solid #334155;
+  border-radius: 8px;
+  background: #0f172a;
+  color: #e2e8f0;
+  padding: 11px 12px;
+  outline: none;
+}
+
+.edit-form input:focus,
+.edit-form select:focus {
+  border-color: #4fd1c5;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 24px;
+}
+
+.cancel-button,
+.save-rule-button {
+  border-radius: 8px;
+  padding: 10px 14px;
+  cursor: pointer;
+}
+
+.cancel-button {
+  border: 1px solid #334155;
+  background: transparent;
+  color: #cbd5e1;
+}
+
+.save-rule-button {
+  border: 1px solid #14b8a6;
+  background: #0f766e;
+  color: white;
+}
+
+.save-rule-button:hover {
+  background: #0d9488;
+}
+
+.save-rule-button:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
