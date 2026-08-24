@@ -4,6 +4,11 @@ A lightweight Security Information and Event Management (SIEM) prototype built f
 
 The project currently monitors Linux authentication telemetry and converts raw system logs into structured security events that can be searched, analyzed, and evaluated against configurable detection rules.
 
+<img width="2048" height="1449" alt="image" src="https://github.com/user-attachments/assets/842588e0-2e79-46a9-92b4-0e7fe7a89376" />
+<img width="2048" height="1035" alt="image" src="https://github.com/user-attachments/assets/280b3c60-30e0-4565-9943-e7b0f49503a9" />
+
+
+
 ## Features
 
 ### Log Collection & Parsing
